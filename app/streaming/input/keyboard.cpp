@@ -139,6 +139,14 @@ void SdlInputHandler::performSpecialKeyCombo(KeyCombo combo)
         updatePointerRegionLock();
         break;
 
+    case KeyComboRequestSwitch:
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
+                    "Detected request to toggle streaming!");
+
+        // Send the request and update state
+        //updatePointerRegionLock();
+        break;
+
     default:
         Q_UNREACHABLE();
     }

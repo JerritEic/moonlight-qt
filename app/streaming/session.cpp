@@ -1149,7 +1149,7 @@ public:
 bool Session::startConnectionAsync()
 {
     // Wait 1.5 seconds before connecting to let the user
-    // have time to read any messages present on the segue
+    // have time to read any messages present on the segue 
     SDL_Delay(1500);
 
     // The UI should have ensured the old game was already quit

@@ -122,6 +122,12 @@ SdlInputHandler::SdlInputHandler(StreamingPreferences& prefs, NvComputer*, int s
     m_SpecialKeyCombos[KeyComboTogglePointerRegionLock].scanCode = SDL_SCANCODE_L;
     m_SpecialKeyCombos[KeyComboTogglePointerRegionLock].enabled = true;
 
+    m_SpecialKeyCombos[KeyComboRequestSwitch].keyCombo = KeyComboRequestSwitch;
+    m_SpecialKeyCombos[KeyComboRequestSwitch].keyCode = SDLK_r;
+    m_SpecialKeyCombos[KeyComboRequestSwitch].scanCode = SDL_SCANCODE_R;
+    m_SpecialKeyCombos[KeyComboRequestSwitch].enabled = true;
+
+
     m_OldIgnoreDevices = SDL_GetHint(SDL_HINT_GAMECONTROLLER_IGNORE_DEVICES);
     m_OldIgnoreDevicesExcept = SDL_GetHint(SDL_HINT_GAMECONTROLLER_IGNORE_DEVICES_EXCEPT);
 

@@ -181,14 +181,26 @@ void SdlInputHandler::handleMouseMotionEvent(SDL_MouseMotionEvent* event)
         return;
     }
 
-    // Batch until the next mouse polling window or we'll get awful
-    // input lag everything except GFE 3.14 and 3.15.
-    if (m_AbsoluteMouseMode) {
-        updateMousePositionReport(event->x, event->y);
+    if (m_BatchMouseMotion) {
+        // Batch until the next mouse polling window or we'll get awful
+        // input lag everything except GFE 3.14 and 3.15.
+        if (m_AbsoluteMouseMode) {
+            updateMousePositionReport(event->x, event->y);
+        }
+        else {
+            SDL_AtomicAdd(&m_MouseDeltaX, event->xrel);
+            SDL_AtomicAdd(&m_MouseDeltaY, event->yrel);
+        }
     }
     else {
-        SDL_AtomicAdd(&m_MouseDeltaX, event->xrel);
-        SDL_AtomicAdd(&m_MouseDeltaY, event->yrel);
+        // On Sunshine, we can send input immediately
+        if (m_AbsoluteMouseMode) {
+            updateMousePositionReport(event->x, event->y);
+            flushMousePositionUpdate();
+        }
+        else {
+            LiSendMouseMoveEvent(event->xrel, event->yrel);
+        }
     }
 }
 
@@ -227,6 +239,21 @@ void SdlInputHandler::handleMouseWheelEvent(SDL_MouseWheelEvent* event)
 
         LiSendHighResScrollEvent((short)(event->preciseY * 120)); // WHEEL_DELTA
     }
+
+    if (event->preciseX != 0.0f) {
+        // Invert the scroll direction if needed
+        if (m_ReverseScrollDirection) {
+            event->preciseX = -event->preciseY;
+        }
+
+#ifdef Q_OS_DARWIN
+        // HACK: Clamp the scroll values on macOS to prevent OS scroll acceleration
+        // from generating wild scroll deltas when scrolling quickly.
+        event->preciseX = SDL_clamp(event->preciseX, -1.0f, 1.0f);
+#endif
+
+        LiSendHighResHScrollEvent((short)(event->preciseX * 120)); // WHEEL_DELTA
+    }
 #else
     if (event->y != 0) {
         // Invert the scroll direction if needed
@@ -240,6 +267,20 @@ void SdlInputHandler::handleMouseWheelEvent(SDL_MouseWheelEvent* event)
 #endif
 
         LiSendScrollEvent((signed char)event->y);
+    }
+
+    if (event->x != 0) {
+        // Invert the scroll direction if needed
+        if (m_ReverseScrollDirection) {
+            event->x = -event->x;
+        }
+
+#ifdef Q_OS_DARWIN
+        // See comment above
+        event->x = SDL_clamp(event->x, -1, 1);
+#endif
+
+        LiSendHScrollEvent((signed char)event->x);
     }
 #endif
 }

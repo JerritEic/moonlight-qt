@@ -314,7 +314,9 @@ void SdlInputHandler::notifyFocusLost()
     // Doing this while the window is full-screen breaks the transition out of FS
     // (desktop and exclusive), so we must check for that before releasing mouse capture.
     if (!(SDL_GetWindowFlags(m_Window) & SDL_WINDOW_FULLSCREEN) && !m_AbsoluteMouseMode) {
-        setCaptureActive(false);
+        // TODO change here for passthrough behaviour
+        // setCaptureActive(false);
+        setCaptureActive(true);
     }
 
     // Raise all keys that are currently pressed. If we don't do this, certain keys

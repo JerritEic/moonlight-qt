@@ -1659,7 +1659,7 @@ void Session::execInternal()
                 SDL_assert(false);
             }
             break;
-
+        // TODO Modify this behaviour to allow passthrough capturing
         case SDL_WINDOWEVENT:
             // Early handling of some events
             switch (event.window.event) {
